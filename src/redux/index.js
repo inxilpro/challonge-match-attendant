@@ -15,6 +15,8 @@ const API_REQUEST = action('API_REQUEST');
 const API_REQUEST_SUCCESS = action('API_REQUEST_SUCCESS');
 const API_REQUEST_ERROR = action('API_REQUEST_ERROR');
 
+const FAVICON_COUNT = action('FAVICON_COUNT');
+
 const LIST_TOURNAMENTS = action('LIST_TOURNAMENTS');
 const LIST_TOURNAMENTS_SUCCESS = action('LIST_TOURNAMENTS_SUCCESS');
 const LIST_TOURNAMENTS_ERROR = action('LIST_TOURNAMENTS_ERROR');
@@ -40,6 +42,7 @@ function action(name) {
  */
 
 export const setApiKey = createAction(API_KEY);
+export const faviconCount = createAction(FAVICON_COUNT);
 
 export const apiRequest = createAction(API_REQUEST, (method, actionType, params = []) => {
 	return {
@@ -62,6 +65,13 @@ const reducer = handleActions({
 		return {
 			...state,
 			apiKey: payload,
+		}
+	},
+	
+	[FAVICON_COUNT]: (state, { payload }) => {
+		return {
+			...state,
+			faviconCount: payload,
 		}
 	},
 	

@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 // import JsonTree from 'react-json-tree';
 import { ensureState } from 'redux-optimistic-ui';
 import localForage from 'localforage';
+import Favicon from 'favico.js';
 import Login from './components/Login';
 import TournamentList from './components/TournamentList';
 import Loader from './components/Loader';
@@ -10,7 +11,22 @@ import * as actions from './redux';
 import './App.css';
 
 class App extends Component {
+	favicon = null;
+	
+	constructor() {
+		super();
+		this.favicon = new Favicon({
+			animation:'popFade',
+			bgColor: '#000',
+		});
+	}
+	
 	render() {
+		const { faviconCount } = this.props;
+		if (faviconCount) {
+			this.favicon.badge(faviconCount);
+		}
+		
 		return (
 			<div className="App container">
 				{ this.renderChildren() }
