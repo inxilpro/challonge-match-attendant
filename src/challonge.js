@@ -26,7 +26,10 @@ export default class Challonge {
 		
 		return fetch(proxiedUrl)
 			.then(this.parseApiResponse.bind(this))
-			.catch(this.handleException.bind(this));
+			.then(res => {
+				console.log('API Response', res);
+				return res;
+			});
 	}
 	
 	parseApiResponse(res) {
@@ -85,15 +88,11 @@ export default class Challonge {
 	buildResponse(res) {
 		return new Promise((resolve, reject) => {
 			res.json().then(data => {
-				return {
+				resolve({
 					ok: true,
 					data
-				};
+				});
 			}).catch(reject);
 		});
-	}
-	
-	handleException(e) {
-		throw e;
 	}
 }

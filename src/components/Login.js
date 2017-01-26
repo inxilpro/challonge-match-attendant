@@ -38,7 +38,7 @@ export default class Login extends Component {
 							<FormControl
 								type="text"
 								onChange={this.onChange}
-								value={apiKey}
+								value={apiKey ? apiKey : ''}
 								inputRef={el => this.keyInput = el} />
 							{message && <HelpBlock>{message}</HelpBlock>}
 						</FormGroup>

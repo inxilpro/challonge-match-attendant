@@ -1,45 +1,42 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import JsonTree from 'react-json-tree';
+// import JsonTree from 'react-json-tree';
 import { ensureState } from 'redux-optimistic-ui';
 import localForage from 'localforage';
-import Challonge from './challonge';
 import Login from './components/Login';
+import TournamentList from './components/TournamentList';
 import Loader from './components/Loader';
-import { setApiKey, loadTournaments, loadTournamentsDone } from './redux';
+import { setApiKey, listTournaments } from './redux';
 import './App.css';
 
 class App extends Component {
-	state = {
-		api: null
-	};
-	
 	render() {
 		return (
 			<div className="App container">
 				{ this.renderChildren() }
-				<JsonTree data={this.props} />
 				<Loader loading={this.props.loading} />
 			</div>
 		);
+		
+		// <JsonTree data={this.props} />
 	}
 	
 	componentDidMount() {
 		localForage.getItem('api_key', (err, value) => {
 			if (!err && value) {
-				this.props.dispatch(setApiKey(value));
+				this.props.actions.setApiKey(value);
 			}
 		});
 		
 		this.load();
 	}
 	
-	componentWillReceiveProps() {
+	componentDidUpdate() {
 		this.load();
 	}
 	
 	renderChildren() {
-		const { apiKey, loggedIn, authError } = this.props;
+		const { apiKey, loggedIn, authError, tournaments } = this.props;
 		
 		if (!loggedIn) {
 			return (
@@ -50,32 +47,49 @@ class App extends Component {
 			);
 		}
 		
-		return "Route needed!";
+		return <TournamentList tournaments={tournaments} />;
 	}
 	
 	onNewKey(apiKey) {
-		this.props.dispatch(setApiKey(apiKey));
-		localForage.setItem('api_key', apiKey, console.error);
+		this.props.actions.setApiKey(apiKey);
+		localForage.setItem('api_key', apiKey);
 	}
 	
 	load() {
-		const { apiKey, tournaments, dispatch } = this.props;
+		const { apiKey, loading, tournaments, actions } = this.props;
 		
-		if (!this.state.api && apiKey && apiKey.length === 40) {
-			dispatch(loadTournaments());
-			this.setState({
-				...this.state,
-				api: new Challonge(apiKey)
-			});
-		}
-		
-		if (!tournaments && this.state.api) {
-			this.state.api.listTournaments().then(data => {
-				console.log(data);
-				dispatch(loadTournamentsDone(data));
-			});
+		if (!loading && apiKey && apiKey.length === 40 && !tournaments) {
+			actions.listTournaments();
 		}
 	}
 }
 
-export default connect(state => ensureState(state))(App);
+function mapStateToProps(state) {
+	const nextState = ensureState(state);
+	return nextState;
+}
+
+function mapDispatchToProps(dispatch) {
+	return {
+		actions: {
+			setApiKey: key => dispatch(setApiKey(key)),
+			listTournaments: () => dispatch(listTournaments()),
+		}
+	};
+}
+
+function mergeProps(stateProps, dispatchProps, ownProps) {
+	return {
+		...ownProps,
+		...stateProps,
+		...dispatchProps
+	};
+}
+
+const connectOpts = {
+	areStatesEqual: (prev, next) => {
+		return ensureState(prev) === ensureState(next);
+	}
+};
+
+export default connect(mapStateToProps, mapDispatchToProps, mergeProps, connectOpts)(App);
