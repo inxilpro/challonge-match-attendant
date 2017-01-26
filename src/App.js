@@ -6,7 +6,7 @@ import localForage from 'localforage';
 import Login from './components/Login';
 import TournamentList from './components/TournamentList';
 import Loader from './components/Loader';
-import { setApiKey, listTournaments } from './redux';
+import * as actions from './redux';
 import './App.css';
 
 class App extends Component {
@@ -36,7 +36,7 @@ class App extends Component {
 	}
 	
 	renderChildren() {
-		const { apiKey, loggedIn, authError, tournaments } = this.props;
+		const { apiKey, loggedIn, authError, tournaments, actions } = this.props;
 		
 		if (!loggedIn) {
 			return (
@@ -47,7 +47,7 @@ class App extends Component {
 			);
 		}
 		
-		return <TournamentList tournaments={tournaments} />;
+		return <TournamentList tournaments={tournaments} actions={actions} />;
 	}
 	
 	onNewKey(apiKey) {
@@ -70,11 +70,15 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-	return {
-		actions: {
-			setApiKey: key => dispatch(setApiKey(key)),
-			listTournaments: () => dispatch(listTournaments()),
+	const dispatchActions = {};
+	Object.keys(actions).forEach(key => {
+		dispatchActions[key] = (...args) => {
+			return dispatch(actions[key].apply(actions, args));
 		}
+	});
+	
+	return {
+		actions: dispatchActions
 	};
 }
 

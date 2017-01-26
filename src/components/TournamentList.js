@@ -12,7 +12,7 @@ export default class TournamentList extends Component {
 					return (
 						<Tournament
 							key={index}
-							onClick={() => console.log(tournament)}
+							onClick={() => this.onSelect(tournament)}
 							{...tournament} />
 					);
 				})}
@@ -22,5 +22,6 @@ export default class TournamentList extends Component {
 	
 	onSelect(tournament) {
 		console.log(tournament);
+		this.props.actions.listMatches(tournament.url);
 	}
 }

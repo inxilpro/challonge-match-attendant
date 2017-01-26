@@ -19,6 +19,14 @@ const LIST_TOURNAMENTS = action('LIST_TOURNAMENTS');
 const LIST_TOURNAMENTS_SUCCESS = action('LIST_TOURNAMENTS_SUCCESS');
 const LIST_TOURNAMENTS_ERROR = action('LIST_TOURNAMENTS_ERROR');
 
+const LIST_PARTICIPANTS = action('LIST_PARTICIPANTS');
+const LIST_PARTICIPANTS_SUCCESS = action('LIST_PARTICIPANTS_SUCCESS');
+const LIST_PARTICIPANTS_ERROR = action('LIST_PARTICIPANTS_ERROR');
+
+const LIST_MATCHES = action('LIST_MATCHES');
+const LIST_MATCHES_SUCCESS = action('LIST_MATCHES_SUCCESS');
+const LIST_MATCHES_ERROR = action('LIST_MATCHES_ERROR');
+
 /*
  * Internal functions
  */
@@ -33,7 +41,7 @@ function action(name) {
 
 export const setApiKey = createAction(API_KEY);
 
-export const apiRequest = createAction(API_REQUEST, (method, actionType, params = {}) => {
+export const apiRequest = createAction(API_REQUEST, (method, actionType, params = []) => {
 	return {
 		method,
 		params
@@ -41,6 +49,8 @@ export const apiRequest = createAction(API_REQUEST, (method, actionType, params 
 }, (method, actionType) => ({ actionType }));
 
 export const listTournaments = () => apiRequest('listTournaments', LIST_TOURNAMENTS);
+export const listParticipants = (tournamentId) => apiRequest('listParticipants', LIST_PARTICIPANTS, [tournamentId]);
+export const listMatches = (tournamentId, state = "all") => apiRequest('listMatches', LIST_MATCHES, [tournamentId, state]);
 
 /*
  * Reducer

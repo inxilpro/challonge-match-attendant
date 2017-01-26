@@ -1,4 +1,3 @@
-
 import { BEGIN, COMMIT, REVERT } from 'redux-optimistic-ui';
 import Challonge from '../challonge';
 
@@ -20,7 +19,7 @@ export default store => next => action => {
 	}
 	
 	// Skip non-API requests
-	if (!api || API_REQUEST  !== type) {
+	if (!api || API_REQUEST !== type) {
 		return next(action);
 	}
 	
@@ -64,29 +63,25 @@ export default store => next => action => {
 	
 	console.log(`Calling API method: "${method}"`);
 	
-	setTimeout(() => {
-		
-		api[method].apply(api, params).then(res => {
-			next({
-				type: API_REQUEST + (res.ok ? _SUCCESS : _ERROR),
-				error: res.ok ? null : res.error,
-				payload: res.ok ? res.data : null
-			});
-			next({
-				type: actionType + (res.ok ? _SUCCESS : _ERROR),
-				error: res.ok ? null : res.error,
-				payload: res.ok ? res.data : null,
-				meta: {
-					optimistic: {
-						type: res.ok ? COMMIT : REVERT,
-						id: transactionID
-					}
-				}
-			});
-		}).catch(e => {
-			console.error('API error', e);
-			throw e;
+	api[method].apply(api, params).then(res => {
+		next({
+			type: API_REQUEST + (res.ok ? _SUCCESS : _ERROR),
+			error: res.ok ? null : res.error,
+			payload: res.ok ? res.data : null
 		});
-		
-	}, 2000);
+		next({
+			type: actionType + (res.ok ? _SUCCESS : _ERROR),
+			error: res.ok ? null : res.error,
+			payload: res.ok ? res.data : null,
+			meta: {
+				optimistic: {
+					type: res.ok ? COMMIT : REVERT,
+					id: transactionID
+				}
+			}
+		});
+	}).catch(e => {
+		console.error('API error', e);
+		throw e;
+	});
 };

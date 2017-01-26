@@ -13,6 +13,14 @@ export default class Challonge {
 		return this.get('tournaments', opts);
 	}
 	
+	listParticipants(tournamentId) {
+		return this.get(`tournaments/${tournamentId}/participants`);
+	}
+	
+	listMatches(tournamentId, state = "all") {
+		return this.get(`tournaments/${tournamentId}/matches`, { state });
+	}
+	
 	get(path, params = {}) {
 		const query = stringify({
 			api_key: this.apiKey,

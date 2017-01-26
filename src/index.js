@@ -3,7 +3,8 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import configureStore from './redux/configureStore';
 import App from './App';
-import 'bootstrap/dist/css/bootstrap.css';
+// import 'bootstrap/dist/css/bootstrap.css';
+import 'bootswatch/superhero/bootstrap.css';
 
 const store = window.reduxStore = configureStore();
 
